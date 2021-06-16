@@ -1,7 +1,7 @@
 version: '3'
 x-zookeeper-common:
   &zookeeper-common
-  image: confluentinc/cp-zookeeper:latest
+  image: confluentinc/cp-zookeeper:6.2.0
   environment:
     &zookeeper-common-env
     ZOOKEEPER_CLIENT_PORT: 2181
@@ -19,7 +19,7 @@ x-zookeeper-common:
 
 x-kafka-common:
   &kafka-common
-  image: confluentinc/cp-kafka:latest
+  image: confluentinc/cp-kafka:6.2.0
   environment:
     &kafka-common-env
     KAFKA_DEFAULT_REPLICATION_FACTOR: 3

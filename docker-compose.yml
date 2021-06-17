@@ -89,11 +89,3 @@ services:
       <<: *kafka-common-env
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:9092,PLAINTEXT_HOST://kafka-3:29092
       KAFKA_BROKER_ID: 3
-
-# volumes:
-#   kafka-data-1:
-#   kafka-data-2:
-#   kafka-data-3:
-#   zookeeper-data-1:
-#   zookeeper-data-2:
-#   zookeeper-data-3:

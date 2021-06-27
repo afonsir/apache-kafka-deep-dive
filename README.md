@@ -192,6 +192,86 @@
   --delete-config log.cleaner.threads
 ```
 
+## More consumer group commands:
+
+- List all the consumer groups:
+
+```bash
+/bin/consumer-groups \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --list
+```
+
+- Describe a specific consumer group:
+
+```bash
+/bin/consumer-groups \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --describe \
+  --group [GROUP_NAME]
+```
+
+- Describe the active members of the group:
+
+```bash
+/bin/consumer-groups \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --describe \
+  --group [GROUP_NAME] \
+  --members
+```
+
+- If the group has active members, get a more verbose output:
+
+```bash
+/bin/consumer-groups \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --describe \
+  --group [GROUP_NAME] \
+  --members \
+  --verbose
+```
+
+- Describe the state of the group:
+
+```bash
+/bin/consumer-groups \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --describe \
+  --group [GROUP_NAME] \
+  --state
+```
+
+- Delete a consumer group (only works if there are no active members):
+
+```bash
+/bin/consumer-groups \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --delete \
+  --group [GROUP_NAME]
+```
+
+- Delete multiple consumer groups:
+
+```bash
+/bin/consumer-groups \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --delete \
+  --group [GROUP_NAME] \
+  --group [GROUP_NAME]
+```
+
+- Reset offsets for a consumer group:
+
+```bash
+/bin/consumer-groups \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --reset-offsets \
+  --group [GROUP_NAME] \
+  --topic [TOPIC_NAME] \
+  --to-latest
+```
+
 ## Testing the Kafka Cluster:
 
 1. Create a file with random data:

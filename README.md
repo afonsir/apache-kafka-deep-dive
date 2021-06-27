@@ -44,6 +44,154 @@
 /bin/zookeeper-shell zookeeper-[SERVER_ID]:2181/kafka
 ```
 
+## More topic commands
+
+- Create a topic if a topic with the same name does NOT exist:
+
+```bash
+/bin/kafka-topics \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --create \
+  --topic [TOPIC_NAME] \
+  --replication-factor 1 \
+  --partitions 3 \
+  --if-not-exists
+```
+
+- Alter the number of partitions (can only go up):
+
+```bash
+/bin/kafka-topics \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --alter \
+  --topic [TOPIC_NAME] \
+  --partitions 6
+```
+
+- Delete a topic (this is irreversible):
+
+```bash
+/bin/kafka-topics \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --delete \
+  --topic [TOPIC_NAME]
+```
+
+- List all topics:
+
+```bash
+/bin/kafka-topics \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --list
+```
+
+- Describe all the topics at once:
+
+```bash
+/bin/kafka-topics \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --describe
+```
+
+- Identify any overrides to topics (configs added to the defaults):
+
+```bash
+/bin/kafka-topics \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --describe \
+  --topics-with-overrides
+```
+
+- Topics that are not in-sync with all replicas:
+
+```bash
+/bin/kafka-topics \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --describe \
+  --under-replicated-partitions
+```
+
+- Topics without a leader replica:
+
+```bash
+/bin/kafka-topics \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --describe \
+  --unavailable-partitions
+```
+
+- Describe the configurations for all topics (only in addition to the defaults):
+
+```bash
+/bin/kafka-configs \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --describe \
+  --entity-type topics
+```
+
+- Describe the configurations for a specific topic (defaults will not show):
+
+```bash
+/bin/kafka-configs \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --describe \
+  --entity-type topics \
+  --entity-name [TOPIC_NAME]
+```
+
+- Change the topics message retention:
+
+```bash
+/bin/kafka-configs \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --alter \
+  --entity-type topics \
+  --entity-name [TOPIC_NAME] \
+  --add-config retention.ms=3600000
+```
+
+- Describe the configurations for all brokers (defaults will not show):
+
+```bash
+/bin/kafka-configs \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --entity-type brokers \
+  --entity-default \
+  --describe
+```
+
+- Describe the configuration for BROKER_ID (defaults will not show):
+
+```bash
+/bin/kafka-configs \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --entity-type brokers \
+  --entity-name [BROKER_ID] \
+  --describe
+```
+
+- Add a custom config to BROKER_ID that will change it's log cleaner thread count:
+
+```bash
+/bin/kafka-configs \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --entity-type brokers \
+  --entity-name [BROKER_ID] \
+  --alter \
+  --add-config log.cleaner.threads=2
+```
+
+- Remove all custom configs (not including defaults) from BROKER_ID:
+
+```bash
+/bin/kafka-configs \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --entity-type brokers \
+  --entity-name [BROKER_ID] \
+  --alter \
+  --delete-config log.cleaner.threads
+```
+
 ## Testing the Kafka Cluster:
 
 1. Create a file with random data:

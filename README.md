@@ -115,3 +115,95 @@ mvn compile
 ```bash
 mvn exec:java --define exec.mainClass="com.github.afonsir.Producer"
 ```
+
+# Consuming from a SQLite Database
+
+- Create Kafka Consumer as a Docker container:
+
+```bash
+docker container run \
+  --tty \
+  --interactive \
+  --rm \
+  --name sqlite-demo \
+  --network host \
+  confluentinc/docker-demo-base:3.3.0
+```
+
+- Start the container service:
+
+```bash
+cd /tmp && confluent start
+```
+
+- Install SQLite:
+
+```bash
+apt-get update --quiet && apt-get install --quiet --yes sqlite3
+```
+
+- Create and populate the database:
+
+```
+sqlite3 test.db
+
+CREATE TABLE accounts (
+  id   INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  name VARCHAR(255)
+);
+
+INSERT INTO accounts(name) VALUES('chad');
+INSERT INTO accounts(name) VALUES('terry');
+
+.quit
+```
+
+- Restart the connect service:
+
+```bash
+confluent stop connect
+```
+
+- Start connect service in standalone mode, with SQLite default configurations:
+
+```bash
+connect-standalone \
+  -daemon /etc/schema-registry/connect-avro-standalone.properties \
+  /etc/kafka-connect-jdbc/source-quickstart-sqlite.properties
+```
+
+- Check the connect service:
+
+```bash
+cat /logs/connectStandalone.out |grep -i "finished"
+
+curl --silent http://localhost:8083/connectors
+```
+
+- Check if the topic was create:
+
+```bash
+kafka-topics --list --zookeeper localhost:2181 | grep test-sqlite-jdbc
+```
+
+- Create a new consumer:
+
+```bash
+kafka-avro-console-consumer \
+  --new-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic test-sqlite-jdbc-accounts \
+  --from-beginning
+```
+
+- In another shell session, insert a new record to the database:
+
+```bash
+docker exec --tty --interactive sqlite-demo /bin/bash
+
+cd /tmp && sqlite3 test.db
+
+INSERT INTO accounts(name) VALUES('william');
+
+.quit
+```

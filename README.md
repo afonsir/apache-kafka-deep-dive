@@ -3,24 +3,24 @@
 - To create a topic:
 ```bash
 /bin/kafka-topics \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
   --create \
-  --topic [TOPIC_NAME] \
-  --bootstrap-server kafka-[BROKER_ID]:9092
+  --topic [TOPIC_NAME]
 ```
 
 - To create a consumer from a topic:
 ```bash
 /bin/kafka-console-consumer \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
   --topic [TOPIC_NAME] \
-  --from-beginning \
-  --bootstrap-server kafka-[BROKER_ID]:9092
+  --from-beginning
 ```
 
 - To produce messages to a topic:
 ```bash
 /bin/kafka-console-producer \
-  --topic [TOPIC_NAME] \
-  --bootstrap-server kafka-[BROKER_ID]:9092
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --topic [TOPIC_NAME]
 ```
 
 - To consume from a group:

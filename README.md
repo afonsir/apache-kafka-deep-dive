@@ -408,7 +408,7 @@ cat /logs/connectStandalone.out |grep -i "finished"
 curl --silent http://localhost:8083/connectors
 ```
 
-- Check if the topic was create:
+- Check if the topic was created:
 
 ```bash
 kafka-topics --list --zookeeper localhost:2181 | grep test-sqlite-jdbc

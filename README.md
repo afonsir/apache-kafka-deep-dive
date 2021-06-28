@@ -1,6 +1,7 @@
 # General Kafka commands
 
 - To create a topic:
+
 ```bash
 /bin/kafka-topics \
   --bootstrap-server kafka-[BROKER_ID]:9092 \
@@ -9,6 +10,7 @@
 ```
 
 - To create a consumer from a topic:
+
 ```bash
 /bin/kafka-console-consumer \
   --bootstrap-server kafka-[BROKER_ID]:9092 \
@@ -17,6 +19,7 @@
 ```
 
 - To produce messages to a topic:
+
 ```bash
 /bin/kafka-console-producer \
   --bootstrap-server kafka-[BROKER_ID]:9092 \
@@ -24,6 +27,7 @@
 ```
 
 - To consume from a group:
+
 ```bash
 /bin/kafka-console-consumer \
   --bootstrap-server kafka-[BROKER_ID]:9092 \
@@ -32,6 +36,7 @@
 ```
 
 - To show group details:
+
 ```bash
 /bin/kafka-consumer-groups \
   --bootstrap-server kafka-[BROKER_ID]:9092 \
@@ -40,6 +45,7 @@
 ```
 
 - To connect to Zookeeper:
+
 ```bash
 /bin/zookeeper-shell zookeeper-[SERVER_ID]:2181/kafka
 ```

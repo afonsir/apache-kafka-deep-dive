@@ -192,6 +192,28 @@
   --delete-config log.cleaner.threads
 ```
 
+- Add a custom replication config from the *replica-count.json* file:
+
+```json
+{
+  "partitions": [
+    {
+      "topic": "transaction",
+      "partition": 0,
+      "replicas": [ 2 ]
+    }
+  ],
+  "version": 1
+}
+```
+
+```bash
+/bin/kafka-reassign-partitions \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --execute \
+  --reassignment-json-file replica-count.json
+```
+
 ## More consumer group commands:
 
 - List all the consumer groups:

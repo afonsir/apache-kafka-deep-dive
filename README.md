@@ -405,7 +405,7 @@ mvn exec:java --define exec.mainClass="com.github.afonsir.Producer"
 
 # Consuming from a SQLite Database
 
-- Create Kafka Consumer as a Docker container:
+- Create Kafka cluster as a Docker container:
 
 ```bash
 docker container run \
@@ -493,4 +493,69 @@ cd /tmp && sqlite3 test.db
 INSERT INTO accounts(name) VALUES('william');
 
 .quit
+```
+
+# Persisting messages to a bucket, with Kafka Connect S3
+
+- Create Kafka cluster as a Docker container:
+
+```bash
+docker container run \
+  --tty \
+  --interactive \
+  --rm \
+  --name s3-connect-demo \
+  --network host \
+  confluentinc/docker-demo-base:3.3.0
+```
+
+- Start the container service:
+
+```bash
+cd /tmp && confluent start
+```
+
+- Install and configure the awscli tool.
+
+- Create a bucket:
+
+```bash
+aws s3api create-bucket --region us-east-1 --bucket apache-kafka-deep-dive-demo
+```
+
+- Change s3 connect configuration (bucket and region) in `/etc/kafka-connect-s3/quickstart-s3.properties`
+
+- Create a new producer, with avro schema:
+
+```bash
+kafka-avro-console-producer \
+  --broker-list localhost:9092 \
+  --topic s3_topic \
+  --property value.schema='{"type": "record", "name": "myrecord", "fields": [{"name": "f1", "type": "string"}]}'
+```
+
+- Add some messages to the topic:
+
+```json
+{ "f1": "value1" }
+{ "f1": "value2" }
+{ "f1": "value3" }
+{ "f1": "value4" }
+{ "f1": "value5" }
+{ "f1": "value6" }
+{ "f1": "value7" }
+{ "f1": "value8" }
+{ "f1": "value9" }
+```
+
+- Load messages to s3:
+
+```bash
+confluent load s3-sink
+```
+
+- List bucket objects:
+
+```bash
+aws s3api list-objects --bucket apache-kafka-deep-dive-demo
 ```

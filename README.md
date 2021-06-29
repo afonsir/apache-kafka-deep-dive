@@ -220,6 +220,37 @@
   --reassignment-json-file replica-count.json
 ```
 
+- Using clean-up policy:
+
+```bash
+/bin/kafka-topics \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --create \
+  --topic [TOPIC_NAME] \
+  --partitions 1 \
+  --replication-factor 1 \
+  --config cleanup.policy=compact \
+  --config min.cleanable.dirty.ratio=0.001 \
+  --config segment.ms=5000
+```
+
+```bash
+/bin/kafka-console-consumer \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --topic [TOPIC_NAME] \
+  --from-beginning \
+  --property print.key=true \
+  --property key.separator=,
+```
+
+```bash
+/bin/kafka-console-producer \
+  --bootstrap-server kafka-[BROKER_ID]:9092 \
+  --topic [TOPIC_NAME] \
+  --property parse.key=true \
+  --property key.separator=,
+```
+
 ## More consumer group commands:
 
 - List all the consumer groups:

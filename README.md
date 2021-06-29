@@ -559,3 +559,59 @@ confluent load s3-sink
 ```bash
 aws s3api list-objects --bucket apache-kafka-deep-dive-demo
 ```
+
+# Word Count Demo
+
+- Create the topic **streams-plaintext-input**:
+
+```bash
+/bin/kafka-topics \
+  --bootstrap-server kafka-2:9092 \
+  --create \
+  --topic streams-plaintext-input \
+  --replication-factor 1 \
+  --partitions 1
+```
+
+- Create the topic **streams-wordcount-output**:
+
+```bash
+/bin/kafka-topics \
+  --bootstrap-server kafka-2:9092 \
+  --create \
+  --topic streams-wordcount-output \
+  --replication-factor 1 \
+  --partitions 1
+```
+
+- Create a producer and add messages to **streams-plaintext-input** topic:
+
+```bash
+/bin/kafka-console-producer \
+  --bootstrap-server kafka-2:9092 \
+  --topic streams-plaintext-input
+
+>kafka streams is great
+>kafka processes messages in real time
+>kafka helps real information streams
+```
+
+- Create a consumer for **streams-wordcount-output** topic:
+
+```bash
+/bin/kafka-console-consumer \
+  --bootstrap-server kafka-1:9092 \
+  --topic streams-wordcount-output \
+  --from-beginning \
+  --formatter kafka.tools.DefaultMessageFormatter \
+  --property print.key=true \
+  --property print.value=true \
+  --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer \
+  --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
+  ```
+
+  - Run the word count demo:
+
+  ```bash
+  /bin/kafka-run-class org.apache.kafka.streams.examples.wordcount.WordCountDemo
+  ```

@@ -560,6 +560,18 @@ confluent load s3-sink
 aws s3api list-objects --bucket apache-kafka-deep-dive-demo
 ```
 
+  # Stream Processing
+
+Design Patterns:
+
+- Single Event Processing
+- Local State Processing
+- Multiphase Processing
+- External Processing
+- Windowed Join
+- Out of Sequence Events
+- Reprocessing
+
 # Word Count Demo
 
 - Create the topic **streams-plaintext-input**:

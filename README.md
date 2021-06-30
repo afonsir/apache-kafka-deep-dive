@@ -627,3 +627,139 @@ Design Patterns:
   ```bash
   /bin/kafka-run-class org.apache.kafka.streams.examples.wordcount.WordCountDemo
   ```
+
+# Data Replication
+
+Multi-cluster Architectures:
+
+- Hub and Spoke
+- Active-Active
+- Active-Standby
+
+MirrorMaker
+
+```bash
+/bin/kafka-mirror-maker \
+  --consumer.config config/consumer.properties \
+  --producer.config config/producer.properties \
+  --new.consumer \
+  --num.streams=2 \
+  --whitelist ".*"
+```
+
+Optimize Producer:
+
+- `max.in.flight.requests.per.connection`
+- `linger.ms`
+- `batch.size`
+
+Optimize Consumer:
+
+- `fetch.max.bytes`
+- `fetch.min.bytes`
+- `fetch.max.wait.ms`
+
+Optimize OS:
+
+- `/proc/sys/net/core/ [optmen_max, rmem_default, rmem_max, vmen_default, vmem_max]`
+- `/proc/sys/net/ipv4/tcp_slow_start_after_idle`
+- `sudo systcl --write net.ipv4.tcp_window_scaling=1`
+
+## Replicating data between clusters
+
+- Install Kafka Confluent:
+
+```bash
+cd /opt
+
+sudo curl --remote-name https://packages.confluent.io/archive/5.2/confluent-5.2.1-2.12.tar.gz
+
+mv confluent-5.2.1 confluent
+```
+
+### Destination Cluster
+
+- Start Zookeeper service on port **2181**:
+
+```bash
+bin/zookeeper-server-start etc/kafka/zookeeper.properties
+```
+
+- Start Kafka server on port **9092**:
+
+```bash
+bin/kafka-server-start etc/kafka/server.properties
+```
+
+### Origin Cluster
+
+- Start Zookeeper service on port **2171**:
+
+```bash
+cp etc/kafka/zookeeper.properties etc/kafka/zookeeper_origin.properties
+
+sed --in-place --expression="s/2181/2171/g" etc/kafka/zookeeper_origin.properties
+sed --in-place -e "s/zookeeper/zookeeper_origin/g" etc/kafka/zookeeper_origin.properties
+
+bin/zookeeper-server-start etc/kafka/zookeeper_origin.properties
+```
+
+- Start Kafka server on port **9082**:
+
+```bash
+cp etc/kafka/server.properties etc/kafka/server_origin.properties
+
+sed --in-place --expression="s/9092/9082/g" etc/kafka/server_origin.properties
+sed --in-place --expression="s/2181/2171/g" etc/kafka/server_origin.properties
+sed --in-place --expression="s/#listeners/listeners/g" etc/kafka/server_origin.properties
+sed --in-place -e "s/kafka-logs/kafka-logs-origin/g" etc/kafka/server_origin.properties
+
+bin/kafka-server-start etc/kafka/server_origin.properties
+```
+
+### Test Replication
+
+- Create a topic on the origin cluster:
+
+```bash
+bin/kafka-topics \
+  --bootstrap-server localhost:9082 \
+  --create \
+  --topic test-topic \
+  --replication-factor 1 \
+  --partitions 1
+```
+
+- Run the Kafka Connect with replicator configuration:
+
+```bash
+bin/connect-standalone \
+  etc/kafka/connect-standalone.properties \
+  etc/kafka-connect-replicator/quickstart-replicator.properties
+```
+
+- Check if the topic was replicated on the destination cluster:
+
+```bash
+bin/kafka-topics \
+  --bootstrap-server localhost:9092 \
+  --topic test-topic.replica \
+  --describe
+```
+
+- Add messages in the topic, from origin cluster:
+
+```bash
+seq 10000 | bin/kafka-console-producer \
+  --broker-list localhost:9082 \
+  --topic test-topic
+```
+
+- Consume messages from destination cluster:
+
+```bash
+bin/kafka-console-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic test-topic.replica \
+  --from-beginning
+```
